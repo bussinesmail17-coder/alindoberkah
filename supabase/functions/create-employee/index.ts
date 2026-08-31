@@ -18,16 +18,28 @@ Deno.serve(async (request) => {
       throw new Error('Hanya Admin atau HR yang dapat membuat akun karyawan.')
     }
     const body = await request.json()
-    if (!body.fullName || !body.email || !body.password) throw new Error('Nama, email, dan kata sandi awal wajib diisi.')
+    if (!body.fullName || !body.password) throw new Error('Nama dan kata sandi awal wajib diisi.')
+    if (String(body.password).length < 8) throw new Error('Kata sandi awal minimal 8 karakter.')
+    const temporaryEmail = `pending-${crypto.randomUUID()}@accounts.hma.internal`
     const { data: created, error: createError } = await admin.auth.admin.createUser({
-      email: body.email, password: body.password, email_confirm: true, user_metadata: { full_name: body.fullName }
+      email: temporaryEmail, password: body.password, email_confirm: true, user_metadata: { full_name: body.fullName }
     })
     if (createError || !created.user) throw createError || new Error('Akun tidak dapat dibuat.')
-    const { data: profile, error: profileError } = await admin.from('profiles').update({
-      position: body.position || null, phone: body.phone || null, base_salary: Number(body.baseSalary) || 0
-    }).eq('id', created.user.id).select('employee_code').single()
-    if (profileError) throw profileError
-    return Response.json({ employeeCode: profile.employee_code }, { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+    try {
+      const { data: profile, error: profileError } = await admin.from('profiles').select('employee_code').eq('id', created.user.id).single()
+      if (profileError || !profile?.employee_code) throw profileError || new Error('ID karyawan tidak dapat dibuat.')
+      const internalEmail = `${profile.employee_code.toLowerCase()}@accounts.hma.internal`
+      const { error: authUpdateError } = await admin.auth.admin.updateUserById(created.user.id, { email: internalEmail, email_confirm: true })
+      if (authUpdateError) throw authUpdateError
+      const { error: profileUpdateError } = await admin.from('profiles').update({
+        email: internalEmail, position: body.position || null, phone: null, base_salary: Number(body.baseSalary) || 0
+      }).eq('id', created.user.id)
+      if (profileUpdateError) throw profileUpdateError
+      return Response.json({ userId: created.user.id, employeeCode: profile.employee_code }, { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+    } catch (error) {
+      await admin.auth.admin.deleteUser(created.user.id)
+      throw error
+    }
   } catch (error) {
     return Response.json({ error: error.message || 'Terjadi kesalahan.' }, { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
   }
