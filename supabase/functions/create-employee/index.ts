@@ -32,7 +32,7 @@ Deno.serve(async (request) => {
       const { error: authUpdateError } = await admin.auth.admin.updateUserById(created.user.id, { email: internalEmail, email_confirm: true })
       if (authUpdateError) throw authUpdateError
       const { error: profileUpdateError } = await admin.from('profiles').update({
-        email: internalEmail, position: body.position || null, phone: null, base_salary: Number(body.baseSalary) || 0
+        email: internalEmail, position: body.position || null, phone: null
       }).eq('id', created.user.id)
       if (profileUpdateError) throw profileUpdateError
       return Response.json({ userId: created.user.id, employeeCode: profile.employee_code }, { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
