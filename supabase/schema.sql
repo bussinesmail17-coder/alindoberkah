@@ -40,6 +40,19 @@ create table public.employee_reports (
   evidence_path text, status text not null default 'submitted' check (status in ('submitted','reviewed','rejected')), created_at timestamptz not null default now()
 );
 
+create table public.employee_leave_requests (
+  id uuid primary key default gen_random_uuid(), employee_id uuid not null references public.profiles(id) on delete cascade,
+  request_type text not null check (request_type in ('izin','cuti','sakit')), start_date date not null, end_date date not null,
+  note text not null, status text not null default 'submitted' check (status in ('submitted','approved','rejected')),
+  reviewed_by uuid references public.profiles(id), reviewed_at timestamptz, review_note text, created_at timestamptz not null default now(), check (end_date >= start_date)
+);
+create table public.employee_cash_advances (
+  id uuid primary key default gen_random_uuid(), employee_id uuid not null references public.profiles(id) on delete cascade,
+  amount numeric(14,2) not null check (amount > 0), note text not null,
+  status text not null default 'submitted' check (status in ('submitted','approved','rejected','paid')),
+  reviewed_by uuid references public.profiles(id), reviewed_at timestamptz, review_note text, created_at timestamptz not null default now()
+);
+
 create table public.fuel_logs (
   id uuid primary key default gen_random_uuid(), vehicle_id uuid not null references public.vehicles(id) on delete restrict,
   employee_id uuid references public.profiles(id) on delete set null, filled_at timestamptz not null default now(),
