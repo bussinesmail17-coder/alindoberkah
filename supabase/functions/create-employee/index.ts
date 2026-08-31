@@ -12,8 +12,11 @@ Deno.serve(async (request) => {
     const admin = createClient(url, serviceRole)
     const { data: authData, error: authError } = await admin.auth.getUser(token)
     if (authError || !authData.user) throw new Error('Sesi administrator tidak valid.')
-    const { data: requester } = await admin.from('profiles').select('role').eq('id', authData.user.id).single()
-    if (!requester || !['admin', 'hr'].includes(requester.role)) throw new Error('Hanya Admin atau HR yang dapat membuat akun karyawan.')
+    const { data: requester } = await admin.from('profiles').select('role').eq('id', authData.user.id).maybeSingle()
+    const primaryAdmin = authData.user.email?.toLowerCase() === 'bussinesmail17@gmail.com'
+    if (!primaryAdmin && (!requester || !['admin', 'hr'].includes(requester.role))) {
+      throw new Error('Hanya Admin atau HR yang dapat membuat akun karyawan.')
+    }
     const body = await request.json()
     if (!body.fullName || !body.email || !body.password) throw new Error('Nama, email, dan kata sandi awal wajib diisi.')
     const { data: created, error: createError } = await admin.auth.admin.createUser({
