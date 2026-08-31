@@ -22,9 +22,12 @@ create table public.attendance (
   id uuid primary key default gen_random_uuid(),
   employee_id uuid not null references public.profiles(id) on delete cascade,
   check_in_at timestamptz not null default now(), client_time timestamptz,
+  check_out_at timestamptz, check_out_client_time timestamptz,
   check_in_date date not null default ((now() at time zone 'Asia/Jakarta')::date),
   latitude numeric(10,7) not null, longitude numeric(10,7) not null,
   accuracy_meters numeric(10,2), selfie_path text not null,
+  check_out_latitude numeric(10,7), check_out_longitude numeric(10,7), check_out_accuracy_meters numeric(10,2), check_out_selfie_path text,
+  shift_name text not null default 'Shift Pagi', shift_start_time time not null default time '08:00', shift_end_time time not null default time '16:00',
   verification_status text not null default 'submitted' check (verification_status in ('submitted','verified','rejected')),
   note text, created_at timestamptz not null default now(), unique (employee_id, check_in_date)
 );
