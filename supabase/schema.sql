@@ -32,7 +32,9 @@ create table public.attendance (
 create table public.employee_reports (
   id uuid primary key default gen_random_uuid(), employee_id uuid not null references public.profiles(id) on delete cascade,
   report_date date not null default ((now() at time zone 'Asia/Jakarta')::date), title text not null, description text not null,
-  status text not null default 'submitted' check (status in ('submitted','reviewed','rejected')), created_at timestamptz not null default now()
+  success_count integer not null default 0 check (success_count >= 0), failed_count integer not null default 0 check (failed_count >= 0),
+  cod_amount numeric(14,2) not null default 0 check (cod_amount >= 0), dfod_amount numeric(14,2) not null default 0 check (dfod_amount >= 0),
+  evidence_path text, status text not null default 'submitted' check (status in ('submitted','reviewed','rejected')), created_at timestamptz not null default now()
 );
 
 create table public.fuel_logs (
@@ -133,3 +135,10 @@ insert into storage.buckets (id, name, public) values ('attendance-selfies', 'at
 create policy "selfie employee upload" on storage.objects for insert to authenticated with check (bucket_id = 'attendance-selfies' and (storage.foldername(name))[1] = auth.uid()::text);
 create policy "selfie employee read" on storage.objects for select to authenticated using (bucket_id = 'attendance-selfies' and ((storage.foldername(name))[1] = auth.uid()::text or public.is_admin()));
 create policy "selfie employee delete" on storage.objects for delete to authenticated using (bucket_id = 'attendance-selfies' and ((storage.foldername(name))[1] = auth.uid()::text or public.is_admin()));
+
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('report-evidence', 'report-evidence', false, 5242880, array['image/jpeg','image/png','image/webp','image/heic','image/heif'])
+on conflict (id) do nothing;
+create policy "employees upload own report evidence" on storage.objects for insert to authenticated with check (bucket_id = 'report-evidence' and (storage.foldername(name))[1] = auth.uid()::text);
+create policy "employees and admins read report evidence" on storage.objects for select to authenticated using (bucket_id = 'report-evidence' and ((storage.foldername(name))[1] = auth.uid()::text or public.is_admin()));
+create policy "employees remove own report evidence" on storage.objects for delete to authenticated using (bucket_id = 'report-evidence' and (storage.foldername(name))[1] = auth.uid()::text);
