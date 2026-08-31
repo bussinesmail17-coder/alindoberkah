@@ -123,6 +123,12 @@ create policy "cash finance manage" on public.cash_transactions for all using (p
 create policy "payroll own or admin" on public.payroll_records for select using (employee_id = auth.uid() or public.is_admin());
 create policy "payroll admin manage" on public.payroll_records for all using (public.is_admin()) with check (public.is_admin());
 
+-- PostgREST table privileges; RLS above remains the authorization boundary.
+grant select, insert, update on table public.vehicles to authenticated;
+grant select, insert, update on table public.employee_reports to authenticated;
+grant select, insert, update, delete on table public.vehicles to service_role;
+grant select, insert, update, delete on table public.employee_reports to service_role;
+
 insert into storage.buckets (id, name, public) values ('attendance-selfies', 'attendance-selfies', false) on conflict (id) do nothing;
 create policy "selfie employee upload" on storage.objects for insert to authenticated with check (bucket_id = 'attendance-selfies' and (storage.foldername(name))[1] = auth.uid()::text);
 create policy "selfie employee read" on storage.objects for select to authenticated using (bucket_id = 'attendance-selfies' and ((storage.foldername(name))[1] = auth.uid()::text or public.is_admin()));
