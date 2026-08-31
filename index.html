@@ -21,21 +21,19 @@
     /* Identitas visual PT Hazard Maju Abadi: biru navy dan merah dari logo. */
     :root{--navy:#082d60;--teal:#c8102e;--red:#c8102e;--blue:#285a9c;--purple:#486a98;--bg:#f4f7fb;--line:#dfe6ef}
     .sidebar{background:linear-gradient(180deg,#082d60,#061f46)}
-    .brand-mark{width:96px;height:42px;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 3px 10px #0003;position:relative}.brand-mark img{position:absolute;width:170px;height:170px;object-fit:cover;left:-37px;top:-48px}
+    .brand{gap:8px;padding-bottom:22px}.brand-mark{display:block;width:108px;height:48px;background:transparent;overflow:visible;flex:none}.brand-mark img{display:block;width:100%;height:100%;object-fit:contain}
     .nav-item:hover,.nav-item.active{background:#17457f}.nav-item.active{box-shadow:inset 3px 0 #e1263f}.nav-item.active i{color:#ff6475}
     .primary-button{box-shadow:0 5px 12px #c8102e2e}.attendance-hero{background:linear-gradient(105deg,#082d60,#1d4f91)}.modal-backdrop{background:#082d6099}
   </style>
-  <style>.brand-mark{background:#071326}.brand-mark img{width:170px;height:auto;left:-37px;top:-25px}</style>
   <style>
     .password-wrap{display:block;position:relative}.password-wrap input{padding-right:42px}.password-toggle{position:absolute;right:7px;top:9px;border:0;background:transparent;color:#315878;font-size:17px;cursor:pointer;line-height:20px}.reset-password-button{border:0;background:transparent;color:#c8102e;text-align:left;padding:0;font:600 11px 'DM Sans';cursor:pointer;margin-top:-5px}
   </style>
-  <style>.brand-mark{width:110px;height:48px;background:#fff}.brand-mark img{position:static;width:100%;height:100%;object-fit:contain;transform:none}</style>
   <style>.profile{gap:8px}.profile .admin-identity{min-width:0;flex:1}.profile .admin-identity b,.profile .admin-identity small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.profile .session-button{margin-left:0;border:1px solid #41638b;background:transparent;color:#fff;border-radius:6px;padding:6px 8px;font:700 10px 'DM Sans';white-space:nowrap;cursor:pointer}.profile .session-button:hover{background:#17457f}</style>
 </head>
 <body>
   <div class="app-shell">
     <aside class="sidebar" id="sidebar">
-      <div class="brand"><span class="brand-mark"><img src="assets/hma-app-logo.png" alt="Logo HMA" /></span><span><b>HMA</b><small>OPERATIONS</small></span></div>
+      <div class="brand"><span class="brand-mark"><img src="assets/hma-logo-white.png" alt="Logo HMA putih" /></span><span><b>HMA</b><small>OPERATIONS</small></span></div>
       <div class="workspace"><span class="online-dot"></span> PT Hazard Maju Abadi</div>
       <nav aria-label="Navigasi utama">
         <button class="nav-item active" data-view="dashboard"><i>⌂</i> Ringkasan</button>
