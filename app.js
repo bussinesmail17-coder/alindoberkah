@@ -1,18 +1,19 @@
 const state = {
-  fleets:[['B 9210 KUR','CDD Box','Rizky Pratama','Siap operasi','done'],['B 8456 HMA','Tronton Box','Dedi Kurniawan','Dalam perjalanan','progress'],['B 9821 UCX','Engkel Box','Budi Santoso','Servis terjadwal','service'],['B 1032 HAZ','Blind Van','—','Siap operasi','done'],['B 7261 HMA','CDD Long','Arman Hakim','Siap operasi','done'],['B 8890 KUR','Tronton Box','—','Tidak aktif','service']],
-  reports:[['30 Agu 2026','LKR-2408-012','Rizky Pratama','Operasional armada wilayah Bekasi','8','0','Rp 2.400.000','Rp 0','Terverifikasi','done'],['30 Agu 2026','LKR-2408-011','Dedi Kurniawan','Pemeriksaan dan penggunaan armada','5','1','Rp 1.750.000','Rp 0','Menunggu verifikasi','pending'],['29 Agu 2026','LKR-2408-010','Budi Santoso','Administrasi dan operasional harian','7','0','Rp 2.100.000','Rp 350.000','Terverifikasi','done']],
-  transactions:[['30 Agu 2026','Pengisian BBM B 9210 KUR','-','Uang Keluar','Rp 850.000','Terverifikasi','done'],['30 Agu 2026','Pembayaran PT Lestari','-','Uang Masuk','Rp 6.450.000','Lunas','done'],['29 Agu 2026','Tol rute Bekasi','-','Uang Keluar','Rp 95.000','Terverifikasi','done'],['29 Agu 2026','Uang jalan DO-2408-232','-','Uang Keluar','Rp 1.200.000','Menunggu','pending']],
-  attendance:[['Rizky Pratama','Driver','07:14','Hadir','—','done'],['Dedi Kurniawan','Driver','07:19','Hadir','—','done'],['Budi Santoso','Driver','—','Belum absen','Jadwal masuk 08:00','pending'],['Siti Aminah','Finance','07:41','Hadir','—','done']],
-  team:[['—','Arif Rahman','arif@hazardmajuabadi.co.id','Direktur Operasional','Super Admin','Aktif','done'],['HMA012','Siti Aminah','siti@hazardmajuabadi.co.id','Finance Manager','Finance','Aktif','done'],['HMA013','Dedi Kurniawan','dedi@hazardmajuabadi.co.id','Driver','Driver','Aktif','done']],
-  fuels:[['30 Agu 2026','B 9210 KUR','Rizky Pratama','204.467','262 KM','29,11 L','32,75 L','+3,64 L','Perlu validasi','pending'],['30 Agu 2026','B 8456 HMA','Dedi Kurniawan','48.748','252 KM','28 L','27,5 L','-0,5 L','Efisien','done'],['29 Agu 2026','B 9821 UCX','Budi Santoso','125.828','189 KM','21 L','24 L','+3 L','Perlu validasi','pending']],
-  payroll:[['Rizky Pratama','Agustus 2026','Rp 3.850.000','Siap dicetak','done'],['Dedi Kurniawan','Agustus 2026','Rp 3.675.000','Siap dicetak','done'],['Siti Aminah','Agustus 2026','Rp 6.500.000','Menunggu persetujuan','pending']]
+  fleets:[],
+  reports:[],
+  transactions:[],
+  attendance:[],
+  team:[],
+  fuels:[],
+  payroll:[]
 };
 const status = (label, type) => `<span class="status ${type}">${label}</span>`;
-const attendanceKey='hma_attendance_records';
-const fallbackAttendance=[{employee:'Rizky Pratama',date:'2026-08-27',status:'Hadir'},{employee:'Rizky Pratama',date:'2026-08-28',status:'Hadir'},{employee:'Rizky Pratama',date:'2026-08-29',status:'Hadir'},{employee:'Dedi Kurniawan',date:'2026-08-27',status:'Hadir'},{employee:'Dedi Kurniawan',date:'2026-08-28',status:'Hadir'},{employee:'Budi Santoso',date:'2026-08-29',status:'Hadir'}];
+document.getElementById('todayButton').textContent=`${new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'})} ▾`;
+const attendanceKey='hma_attendance_records_v2';
+const fallbackAttendance=[];
 function attendanceRecords(){try{return JSON.parse(localStorage.getItem(attendanceKey))||fallbackAttendance}catch{return fallbackAttendance}}
 function workdays(employee,period='2026-08'){return attendanceRecords().filter(x=>x.employee===employee&&x.status==='Hadir'&&x.date.startsWith(period)).length}
-function tableRows(items, template, target){document.querySelector(target).innerHTML=items.map(template).join('')}
+function tableRows(items, template, target){const columns={reportRows:6,transactionRows:5,attendanceRows:5,teamRows:6,fuelRows:8,payrollRows:6};const body=document.querySelector(target);body.innerHTML=items.length?items.map(template).join(''):`<tr><td colspan="${columns[body.id]||1}" style="text-align:center;padding:32px;color:#789">Belum ada data operasional.</td></tr>`}
 async function loadFuelReports(){if(!window.hmaSupabase)return;const {data,error}=await window.hmaSupabase.from('fuel_logs').select('filled_at,current_odometer,distance_km,expected_liters,liters,vehicles(plate_no),profiles(full_name)').order('filled_at',{ascending:false}).limit(100);if(error||!data?.length)return;state.fuels=data.map(row=>{const expected=Number(row.expected_liters),actual=Number(row.liters),difference=actual-expected,needsValidation=difference>0.5;return [new Date(row.filled_at).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}),row.vehicles?.plate_no||'—',row.profiles?.full_name||'—',Number(row.current_odometer).toLocaleString('id-ID'),`${Number(row.distance_km).toLocaleString('id-ID')} KM`,`${expected.toLocaleString('id-ID',{maximumFractionDigits:2})} L`,`${actual.toLocaleString('id-ID',{maximumFractionDigits:2})} L`,`${difference>=0?'+':''}${difference.toLocaleString('id-ID',{maximumFractionDigits:2})} L`,needsValidation?'Perlu validasi':'Efisien',needsValidation?'pending':'done']});render()}
 function render(){
  document.querySelector('#fleetCards').innerHTML=state.fleets.map(x=>`<article class="fleet-card"><header><div><p>${x[1]}</p><h3>${x[0]}</h3></div>${status(x[3],x[4])}</header><div class="fleet-meta"><span>Driver: <b>${x[2]}</b></span><span>Detail →</span></div></article>`).join('');
