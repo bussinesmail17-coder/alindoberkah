@@ -28,6 +28,7 @@ create table public.attendance (
   accuracy_meters numeric(10,2), selfie_path text not null,
   check_out_latitude numeric(10,7), check_out_longitude numeric(10,7), check_out_accuracy_meters numeric(10,2), check_out_selfie_path text,
   shift_name text not null default 'Shift Pagi', shift_start_time time not null default time '08:00', shift_end_time time not null default time '16:00',
+  late_minutes integer not null default 0 check (late_minutes >= 0), early_leave_minutes integer not null default 0 check (early_leave_minutes >= 0),
   verification_status text not null default 'submitted' check (verification_status in ('submitted','verified','rejected')),
   note text, created_at timestamptz not null default now(), unique (employee_id, check_in_date)
 );
