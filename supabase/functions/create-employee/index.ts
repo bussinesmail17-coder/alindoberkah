@@ -13,13 +13,14 @@ Deno.serve(async (request) => {
     const { data: authData, error: authError } = await admin.auth.getUser(token)
     if (authError || !authData.user) throw new Error('Sesi administrator tidak valid.')
     const { data: requester } = await admin.from('profiles').select('role').eq('id', authData.user.id).maybeSingle()
-    const primaryAdmin = authData.user.email?.toLowerCase() === 'bussinesmail17@gmail.com'
-    if (!primaryAdmin && (!requester || !['admin', 'hr'].includes(requester.role))) {
+    if (!requester || !['admin', 'hr'].includes(requester.role)) {
       throw new Error('Hanya Admin atau HR yang dapat membuat akun karyawan.')
     }
     const body = await request.json()
     if (!body.fullName || !body.password) throw new Error('Nama dan kata sandi awal wajib diisi.')
     if (String(body.password).length < 8) throw new Error('Kata sandi awal minimal 8 karakter.')
+    const role = ['employee', 'hr', 'finance', 'admin'].includes(body.role) ? body.role : 'employee'
+    if (role !== 'employee' && requester.role !== 'admin') throw new Error('Hanya Super Admin yang dapat membuat akun dengan role HR, Finance, atau Super Admin.')
     const temporaryEmail = `pending-${crypto.randomUUID()}@accounts.hma.internal`
     const { data: created, error: createError } = await admin.auth.admin.createUser({
       email: temporaryEmail, password: body.password, email_confirm: true, user_metadata: { full_name: body.fullName }
@@ -32,10 +33,11 @@ Deno.serve(async (request) => {
       const { error: authUpdateError } = await admin.auth.admin.updateUserById(created.user.id, { email: internalEmail, email_confirm: true })
       if (authUpdateError) throw authUpdateError
       const { error: profileUpdateError } = await admin.from('profiles').update({
-        email: internalEmail, position: body.position || null, phone: null
+        email: internalEmail, position: body.position || null, phone: null, role
       }).eq('id', created.user.id)
       if (profileUpdateError) throw profileUpdateError
-      return Response.json({ userId: created.user.id, employeeCode: profile.employee_code }, { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+      const roleLabel = { employee: 'Karyawan', hr: 'HR', finance: 'Finance', admin: 'Super Admin' }[role]
+      return Response.json({ userId: created.user.id, employeeCode: profile.employee_code, roleLabel }, { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     } catch (error) {
       await admin.auth.admin.deleteUser(created.user.id)
       throw error
