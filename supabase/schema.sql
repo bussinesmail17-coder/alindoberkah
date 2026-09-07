@@ -143,7 +143,7 @@ create policy "payroll own or admin" on public.payroll_records for select using 
 create policy "payroll admin manage" on public.payroll_records for all using (public.is_admin()) with check (public.is_admin());
 
 -- PostgREST table privileges; RLS above remains the authorization boundary.
-grant select, insert, update on table public.vehicles to authenticated;
+grant select, insert, update, delete on table public.vehicles to authenticated;
 grant select, insert, update on table public.employee_reports to authenticated;
 grant select, insert, update, delete on table public.cash_transactions to authenticated;
 grant select, insert, update, delete on table public.payroll_records to authenticated;
