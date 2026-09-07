@@ -16,6 +16,9 @@
     addButton('#requests .page-intro','↓ Tarik report',exportRequests);
     document.querySelectorAll('#dashboard .stat-card.income,#dashboard .stat-card.expense,#dashboard .stat-card.profit').forEach(card=>card.addEventListener('click',()=>goTo('transactions')));
     document.querySelector('#dashboard .stat-card.alert')?.addEventListener('click',()=>goTo('requests'));
+    const dashboardButtons=[['#dashboard .revenue-panel .text-button','transactions'],['#dashboard .dashboard-grid > article:nth-child(2) .text-button','reports'],['#dashboard .lower-grid > article:nth-child(1) .text-button','reports'],['#dashboard .lower-grid > article:nth-child(2) .text-button','fleets']];
+    dashboardButtons.forEach(([selector,view])=>document.querySelector(selector)?.addEventListener('click',()=>goTo(view)));
+    document.querySelector('#dashboardActivity')?.addEventListener('click',()=>goTo('reports'));
     refreshDashboardTotals();setInterval(refreshDashboardTotals,30000);
   });
 })();
