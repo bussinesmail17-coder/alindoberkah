@@ -60,9 +60,10 @@ create table public.fuel_logs (
   previous_odometer numeric(12,1) not null check (previous_odometer >= 0),
   current_odometer numeric(12,1) not null check (current_odometer >= previous_odometer),
   liters numeric(10,2) not null check (liters > 0), price_per_liter numeric(12,2) not null check (price_per_liter >= 0),
+  fuel_type text not null default 'Pertalite',
   total_amount numeric(14,2) generated always as (liters * price_per_liter) stored,
   distance_km numeric(12,1) generated always as (current_odometer - previous_odometer) stored,
-  expected_liters numeric(12,2) generated always as ((current_odometer - previous_odometer) / 9.0) stored,
+  expected_liters numeric(12,2) generated always as ((current_odometer - previous_odometer) / case when lower(trim(coalesce(fuel_type, 'Pertalite'))) = 'solar' then 7.0 else 9.0 end) stored,
   created_at timestamptz not null default now()
 );
 
