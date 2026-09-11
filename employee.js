@@ -87,7 +87,10 @@ document.getElementById('homeCheckIn').addEventListener('click',openAttendance);
 function openEmployeeScreen(id){const screen=document.getElementById(id);if(!screen)return;document.querySelectorAll('.screen').forEach(item=>item.classList.remove('active'));screen.classList.add('active');document.querySelectorAll('.bottom-nav button').forEach(button=>button.classList.toggle('active',button.dataset.screen===id));window.scrollTo({top:0,behavior:'smooth'})}
 document.querySelectorAll('[data-screen]').forEach(button=>button.addEventListener('click',()=>openEmployeeScreen(button.dataset.screen)));
 if(window.location.hash==='#attendance')openEmployeeScreen('attendance');
-const openedFromDashboard=new URLSearchParams(window.location.search).get('from')==='dashboard';
+// Legacy shortcuts used #attendance without a query string. Keep the return
+// button available for both link formats, while ordinary bottom navigation
+// remains inside the employee application.
+const openedFromDashboard=new URLSearchParams(window.location.search).get('from')==='dashboard'||window.location.hash==='#attendance';
 document.querySelectorAll('[data-return-dashboard]').forEach(button=>{button.hidden=!openedFromDashboard;button.addEventListener('click',()=>window.location.assign('index.html'))});
 document.querySelectorAll('[data-back-home]').forEach(button=>button.addEventListener('click',()=>document.querySelector('[data-screen="home"]').click()));
 ['profile'].forEach(id=>{const screen=document.getElementById(id);if(screen&&!screen.querySelector('[data-back-home]')){const button=document.createElement('button');button.type='button';button.className='pwa-back-button profile-back';button.dataset.backHome='';button.setAttribute('aria-label','Kembali ke beranda');button.textContent='←';button.addEventListener('click',()=>document.querySelector('[data-screen="home"]').click());screen.prepend(button)}});
