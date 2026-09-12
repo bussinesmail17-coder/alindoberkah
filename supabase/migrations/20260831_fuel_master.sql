@@ -19,6 +19,8 @@ alter table public.fuel_logs add column if not exists vendor_name text;
 alter table public.fuel_types enable row level security;
 alter table public.fuel_vendors enable row level security;
 alter table public.fuel_prices enable row level security;
+grant select on public.fuel_types, public.fuel_vendors, public.fuel_prices to authenticated;
+grant insert, update, delete on public.fuel_types, public.fuel_vendors, public.fuel_prices to authenticated;
 create policy "fuel masters read authenticated" on public.fuel_types for select using (auth.uid() is not null);
 create policy "fuel type admin manage" on public.fuel_types for all using (public.is_admin()) with check (public.is_admin());
 create policy "fuel vendors read authenticated" on public.fuel_vendors for select using (auth.uid() is not null);
