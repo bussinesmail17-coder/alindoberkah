@@ -196,4 +196,38 @@ end;
 $$;
 
 grant execute on function public.record_cash_transaction(date,text,text,text,numeric,uuid) to authenticated;
+
+-- Excel imports may reference the visible employee code (for example HMA001)
+-- without exposing internal profile UUIDs to Finance users.
+create or replace function public.record_cash_transaction_by_employee_code(
+  p_transaction_date date,
+  p_type text,
+  p_category text,
+  p_description text,
+  p_amount numeric,
+  p_employee_code text default null
+)
+returns public.cash_transactions
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  resolved_employee_id uuid;
+begin
+  if coalesce(trim(p_employee_code), '') <> '' then
+    select id into resolved_employee_id
+    from public.profiles
+    where upper(employee_code) = upper(trim(p_employee_code));
+    if resolved_employee_id is null then
+      raise exception 'Kode karyawan % tidak ditemukan.', p_employee_code using errcode = '22023';
+    end if;
+  end if;
+
+  return public.record_cash_transaction(
+    p_transaction_date, p_type, p_category, p_description, p_amount, resolved_employee_id
+  );
+end;
+$$;
+grant execute on function public.record_cash_transaction_by_employee_code(date,text,text,text,numeric,text) to authenticated;
 notify pgrst, 'reload schema';
