@@ -10,9 +10,9 @@ declare
 begin
   if not exists (
     select 1 from public.profiles
-    where id = auth.uid() and role in ('admin', 'finance')
+    where id = auth.uid() and role in ('admin', 'hr', 'finance')
   ) then
-    raise exception 'Hanya Super Admin atau Finance yang dapat memulihkan transaksi.' using errcode = '42501';
+    raise exception 'Hanya Super Admin, HR, atau Finance yang dapat memulihkan transaksi.' using errcode = '42501';
   end if;
 
   update public.cash_transactions
