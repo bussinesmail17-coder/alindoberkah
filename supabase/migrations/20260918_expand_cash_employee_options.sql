@@ -1,6 +1,6 @@
--- Provide a minimal employee picker for Finance, HR, and Super Admin.
--- This intentionally exposes only the identifiers needed to tag a cash entry,
--- not private profile fields such as email, phone, or salary.
+-- Include every non-Super-Admin company user in the cash employee picker.
+-- Some existing employee accounts have already been reassigned to HR/Finance,
+-- so filtering exclusively by the legacy `employee` role leaves the picker empty.
 
 create or replace function public.cash_transaction_employee_options()
 returns table (id uuid, employee_code text, full_name text)
