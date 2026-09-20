@@ -9,7 +9,7 @@ Deno.serve(async (request) => {
     if (!token) throw new Error('Sesi administrator tidak ditemukan.')
     const url = Deno.env.get('SUPABASE_URL')!
     const serviceRole = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    const internalAuthDomain = Deno.env.get('COMPANY_INTERNAL_AUTH_DOMAIN') || 'accounts.hma.internal'
+    const internalAuthDomain = Deno.env.get('COMPANY_INTERNAL_AUTH_DOMAIN') || 'accounts.alindo.internal'
     const admin = createClient(url, serviceRole)
     const { data: authData, error: authError } = await admin.auth.getUser(token)
     if (authError || !authData.user) throw new Error('Sesi administrator tidak valid.')

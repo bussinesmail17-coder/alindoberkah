@@ -1,6 +1,8 @@
-# HMA Operations
+# ABS Operations
 
-Antarmuka operasional PT Hazard Maju Abadi untuk administrator dan karyawan. Administrator memakai `index.html`; karyawan memakai `employee.html` dengan tampilan mobile-first.
+Antarmuka operasional PT Alindo Berkah Sekumpul untuk administrator dan karyawan. Administrator memakai `index.html`; karyawan memakai `employee.html` dengan tampilan mobile-first.
+
+Identitas deployment disimpan di `company-config.js`. Untuk membuat instalasi perusahaan lain dengan database dan deployment terpisah, ikuti `CLONE_DEPLOYMENT.md`.
 
 Identitas deployment disimpan di `company-config.js`. Untuk membuat instalasi perusahaan lain dengan database dan deployment terpisah, ikuti `CLONE_DEPLOYMENT.md`.
 

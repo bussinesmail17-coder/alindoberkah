@@ -1,5 +1,5 @@
 const attendanceKey='hma_attendance_records_v2';
-const companyIdentity=window.companyIdentity||{shortName:'HMA',appName:'HMA Operations',employeeExample:'HMA001',employeeCodePattern:/^HMA\d{3,}$/i,internalAuthEmail:id=>`${String(id).trim().toLowerCase()}@accounts.hma.internal`};
+const companyIdentity=window.companyIdentity||{shortName:'ABS',appName:'ABS Operations',employeeExample:'ABS001',employeeCodePattern:/^ABS\d{3,}$/i,internalAuthEmail:id=>`${String(id).trim().toLowerCase()}@accounts.alindo.internal`};
 let currentEmployee='';
 let currentUser=null;
 let currentProfile=null;

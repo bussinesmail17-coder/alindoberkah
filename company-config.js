@@ -1,28 +1,28 @@
 /*
  * Identitas perusahaan untuk satu deployment.
  * Saat aplikasi di-clone, ubah nilai di file ini dan ganti aset logo yang
- * dirujuk di bawah. Nilai HMA dipertahankan sebagai default untuk produksi.
+ * dirujuk di bawah.
  */
 window.COMPANY_CONFIG = Object.freeze({
-  legalName: 'PT Hazard Maju Abadi',
-  shortName: 'HMA',
+  legalName: 'PT Alindo Berkah Sekumpul',
+  shortName: 'ABS',
   operationsLabel: 'OPERATIONS',
   employeeLabel: 'KARYAWAN',
-  appName: 'HMA Operations',
-  employeeAppName: 'HMA Karyawan',
-  employeeCodePrefix: 'HMA',
-  internalAuthDomain: 'accounts.hma.internal',
-  authStorageKey: 'hma_operations_auth',
+  appName: 'ABS Operations',
+  employeeAppName: 'ABS Karyawan',
+  employeeCodePrefix: 'ABS',
+  internalAuthDomain: 'accounts.alindo.internal',
+  authStorageKey: 'alindo_operations_auth',
   developerName: 'Movetra.id',
   logos: {
-    favicon: 'assets/hma-logo.png',
-    sidebar: 'assets/hma-logo-white.png',
-    primary: 'assets/hma-logo-color-transparent.png',
-    employeeLogin: 'assets/hma-app-logo.png'
+    favicon: 'assets/abs-logo.png',
+    sidebar: 'assets/abs-logo.png',
+    primary: 'assets/abs-logo.png',
+    employeeLogin: 'assets/abs-logo.png'
   },
   theme: {
-    navy: '#082d60',
-    accent: '#c8102e',
-    blue: '#285a9c'
+    navy: '#006b2d',
+    accent: '#17a84b',
+    blue: '#0b8f43'
   }
 });

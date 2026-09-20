@@ -11,8 +11,7 @@ Deno.serve(async (request) => {
     const { data: authData, error: authError } = await admin.auth.getUser(token)
     if (authError || !authData.user) throw new Error('Sesi administrator tidak valid.')
     const { data: requester } = await admin.from('profiles').select('role').eq('id', authData.user.id).maybeSingle()
-    const primaryAdmin = authData.user.email?.toLowerCase() === 'bussinesmail17@gmail.com'
-    if (!primaryAdmin && (!requester || !['admin', 'hr'].includes(requester.role))) throw new Error('Hanya Admin atau HR yang dapat mengelola akun karyawan.')
+    if (!requester || requester.role !== 'admin') throw new Error('Hanya Super Admin yang dapat mengelola akun karyawan.')
 
     const body = await request.json()
     if (!body.employeeId || !['reset_password', 'delete'].includes(body.action)) throw new Error('Permintaan pengelolaan akun tidak valid.')

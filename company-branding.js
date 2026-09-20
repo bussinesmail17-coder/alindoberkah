@@ -1,6 +1,6 @@
 (function () {
   const config = window.COMPANY_CONFIG || {};
-  const shortName = config.shortName || 'HMA';
+  const shortName = config.shortName || 'ABS';
   const prefix = String(config.employeeCodePrefix || shortName).toUpperCase();
   const logos = config.logos || {};
 
@@ -48,7 +48,7 @@
   window.companyIdentity = Object.freeze({
     ...textValues,
     employeeCodePrefix: prefix,
-    internalAuthDomain: config.internalAuthDomain || 'accounts.hma.internal',
+    internalAuthDomain: config.internalAuthDomain || 'accounts.alindo.internal',
     employeeCodePattern: new RegExp(`^${prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\d{3,}$`, 'i'),
     internalAuthEmail(employeeCode) {
       return `${String(employeeCode).trim().toLowerCase()}@${this.internalAuthDomain}`;
