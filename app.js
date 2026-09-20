@@ -46,7 +46,7 @@ const companyIdentity=window.companyIdentity||{shortName:'ABS',legalName:'PT Ali
 const internalAuthEmail=id=>companyIdentity.internalAuthEmail(id);
 let adminRole='';
 const isSuperAdmin=()=>adminRole==='admin';
-document.getElementById('todayButton').textContent=`${new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'})} ▾`;
+{const now=new Date(),todayButton=document.getElementById('todayButton');todayButton.innerHTML=`<i data-lucide="calendar-days"></i><span>${now.toLocaleDateString('id-ID',{weekday:'short',day:'2-digit',month:'short',year:'numeric'})}</span>`;todayButton.title=`${now.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'})} · ${now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})} WIB`;}
 const attendanceKey='hma_attendance_records_v2';
 const fallbackAttendance=[];
 function attendanceRecords(){try{return JSON.parse(localStorage.getItem(attendanceKey))||fallbackAttendance}catch{return fallbackAttendance}}
