@@ -9,6 +9,7 @@ Deno.serve(async (request) => {
     if (!token) throw new Error('Sesi administrator tidak ditemukan.')
     const url = Deno.env.get('SUPABASE_URL')!
     const serviceRole = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const internalAuthDomain = Deno.env.get('COMPANY_INTERNAL_AUTH_DOMAIN') || 'accounts.hma.internal'
     const admin = createClient(url, serviceRole)
     const { data: authData, error: authError } = await admin.auth.getUser(token)
     if (authError || !authData.user) throw new Error('Sesi administrator tidak valid.')
@@ -21,7 +22,7 @@ Deno.serve(async (request) => {
     if (String(body.password).length < 8) throw new Error('Kata sandi awal minimal 8 karakter.')
     const role = ['employee', 'hr', 'finance', 'admin'].includes(body.role) ? body.role : 'employee'
     if (role !== 'employee' && requester.role !== 'admin') throw new Error('Hanya Super Admin yang dapat membuat akun dengan role HR, Finance, atau Super Admin.')
-    const temporaryEmail = `pending-${crypto.randomUUID()}@accounts.hma.internal`
+    const temporaryEmail = `pending-${crypto.randomUUID()}@${internalAuthDomain}`
     const { data: created, error: createError } = await admin.auth.admin.createUser({
       email: temporaryEmail, password: body.password, email_confirm: true, user_metadata: { full_name: body.fullName }
     })
@@ -29,7 +30,7 @@ Deno.serve(async (request) => {
     try {
       const { data: profile, error: profileError } = await admin.from('profiles').select('employee_code').eq('id', created.user.id).single()
       if (profileError || !profile?.employee_code) throw profileError || new Error('ID karyawan tidak dapat dibuat.')
-      const internalEmail = `${profile.employee_code.toLowerCase()}@accounts.hma.internal`
+      const internalEmail = `${profile.employee_code.toLowerCase()}@${internalAuthDomain}`
       const { error: authUpdateError } = await admin.auth.admin.updateUserById(created.user.id, { email: internalEmail, email_confirm: true })
       if (authUpdateError) throw authUpdateError
       const { error: profileUpdateError } = await admin.from('profiles').update({
