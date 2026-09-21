@@ -39,7 +39,7 @@ Ganti file logo di folder `assets` atau ubah jalurnya pada `company-config.js`. 
 2. Jalankan `supabase/schema.sql` di SQL Editor.
 3. Jalankan file dalam `supabase/migrations` menurut urutan nama file.
 4. Salin `supabase/company-identity.example.sql`, ganti seluruh `ABC` dengan `employeeCodePrefix`, lalu jalankan **sebelum membuat karyawan pertama**.
-5. Deploy Edge Function `create-employee` dari `supabase/functions/create-employee`.
+5. Deploy Edge Function `create-employee` dari `supabase/functions/create-employee` dan `manage-employee` dari `supabase/functions/manage-employee` (reset kata sandi dan hapus akun).
 6. Tambahkan secret Edge Function:
 
    ```text
